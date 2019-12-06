@@ -1,0 +1,139 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+typedef unsigned long long ull;
+int LIMIT=1000001;
+static int c;
+ull exponentation(ull base,ull exp,ull num)
+{
+    ull x=1;
+    ull y=base;
+    while(exp > 0)
+    {
+        if(exp%2)
+            x=(x*x)%num;
+        y=(y*y)%num;
+        exp=exp/2;
+    }
+    return x%num;
+}
+ull mulmod(ull base,ull exp,ull num)
+{
+    ull x=0;
+    ull y=base%num;
+    while(exp>0)
+    {
+        if(exp%2)
+            x=(x+x)%num;
+        y=(y*2)%num;
+        exp=exp/2;
+    }
+    return x%num;
+}
+bool prime(ull base,ull exp,ull num)
+{
+    ull x=exponentation(base,exp,num);
+    if(x==1 || x==num-1)
+        return true;
+    while(exp!=num-1)
+    {
+        x=mulmod(x,x,num);
+        exp=exp*exp;
+        if(x==num-1)
+            return true;
+        if(x==1)
+            return false;
+    }
+    return false;
+}
+bool isPrime(ull num)
+{
+    if(num%2==0)
+        return false;
+    if(num%3==0)
+        return false;
+    ull s=num;
+    while(s%2==0)
+        s=s/2;
+    ull arr[3]={2,3,5};
+    for(int i=0;i<1;i++)
+    {
+        if(prime(arr[i],s,num)==false)
+            return false;
+    }
+    
+    return true;
+}
+bool *seive()
+{
+    bool *arr=(bool *)malloc(sizeof(bool)*LIMIT);
+    for(int i=0;i<LIMIT;i++)
+        arr[i]=true;
+    arr[0]=false;
+    arr[1]=false;
+    for(int i=2;i*i<LIMIT;i++)
+    {
+        if(arr[i])
+        {
+            for(int j=2*i;j<LIMIT;j=j+i)
+                arr[j]=false;
+        }
+    }
+    return arr;
+}
+    
+int main() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */   
+    int n;
+    cin>>n;
+    bool *arr=seive();
+    long  i,j;
+    long prime_count=0;
+    int* arr2=(int *)malloc(LIMIT*sizeof(int));
+    
+    for(i=0;i<LIMIT;i++)
+    {
+     if(arr[i]==true)
+            prime_count++;
+    arr2[i]=prime_count;
+    }
+    
+    ull i2;
+    int ans2=prime_count;
+    for(i2=LIMIT;i2<=10000000;i2++)
+    {
+            if(isPrime(i2))
+                ans2++;
+                
+    }
+    //printf("%ld  %ld",ans2,prime_count);
+    while(n--)
+    {
+        ull num;
+        cin>>num;
+        int ans=0;
+        
+        if(num<=LIMIT-1)
+        {
+           ans=arr2[num];
+        }
+        else if(num==10000000)
+            ans=ans2;
+        else
+        {
+            ans=prime_count;
+            i2=LIMIT;
+            for(i2=LIMIT;i2<=num;i2++)
+            {
+                if(isPrime(i2))
+                    ans++;
+                
+            }
+        }
+        printf("%ld\n",ans);
+    }
+    return 0;
+}
